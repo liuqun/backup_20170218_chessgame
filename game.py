@@ -52,7 +52,7 @@ GameBoard for 围棋、象棋等棋类游戏的棋盘建模
             print(file=debugdumpfile)
         if not file:
             debugdumpfile.close()
-    def makeIdForNewChessPiece(self, pieceName="", coordinate=[0,0]):
+    def makeIdForNewChessPiece(self, pieceName="", coordinate=None):
         self.__pieceNameList.append(pieceName)
         x,y = coordinate
         pieceId = len(self.__pieceNameList)
