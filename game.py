@@ -62,7 +62,7 @@ GameBoard for 围棋、象棋等棋类游戏的棋盘建模
         x,y = coordinate # coordinate 必须是 x,y 坐标形式 ----FIXME: 检查参数
         if (x<0 or x>=self.__width):
             return False
-        if (y<0 or x>=self.__height):
+        if (y<0 or y>=self.__height):
             return False
         pieceId = self.__battlefield[y][x]
         return pieceId # 注: pieceId 等于 0 时表示当前格子无棋子
@@ -87,7 +87,7 @@ GameBoard for 围棋、象棋等棋类游戏的棋盘建模
         x,y = coordinate # coordinate 必须是 x,y 坐标形式 ----FIXME: 检查参数
         if (x<0 or x>=self.__width):
             raise ValueError('Error: Invalid coordinate=%s' % (str(coordinate)))
-        if (y<0 or x>=self.__height):
+        if (y<0 or y>=self.__height):
             raise ValueError('Error: Invalid coordinate=%s' % (str(coordinate)))
         try:
             x0,y0 = self.findPiece(pieceId)
