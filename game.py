@@ -1,16 +1,14 @@
 #-*-coding:utf8;-*-
 
-class GameBoard:
-    """
-GameBoard for 围棋、象棋等棋类游戏的棋盘建模
+# 中国象棋棋盘 90 格的坐标约定从 0,0 到 8,9
 # 国际象棋棋盘 64 格的坐标约定从 0,0 到 7,7
-# 自定义格子编号 0-63 号
-# 如果没有棋子则在格子上标记 None, 如果有棋子, 则在该格子上放置棋子 ID
+# 如果没有棋子则在格子上标记 0, 如果有棋子, 则在该格子上放置棋子 ID
 # ID>0 表示有棋子, 注意 ID=0 或 None 都代表格子上没有棋子, ID<0 会导致错误
-# 棋子从一个格子走到另一个格子后,擦除脚印,只保留棋子当前位置
-# GameBoard.hasPieceAtCoordinate([x,y]) 检查棋盘坐标 x,y 位置, 如果发现有棋子则返回棋子的 ID, 否则默认返回 0(或 None)表示 false
-# GameBoard.dump(sys.stdout) 可以通过终端命令提示符窗口(或指定其他日志文件)查看当前棋盘
-"""
+# 棋子从一个格子走到另一个格子后擦除脚印, 只保留棋子当前位置
+# gameBoard.hasPieceAtCoordinate([x,y]) 检查棋盘坐标 x,y 位置, 如果发现有棋子则返回棋子的 ID, 否则默认返回 0(或 None 表示 false)
+# gameBoard.dump(sys.stdout) 可以通过终端命令提示符窗口(或指定其他日志文件)查看当前棋盘
+class GameBoard:
+    """GameBoard for 围棋、象棋等棋类游戏的棋盘建模"""
     def width(self): # 棋盘宽度
         return self.__width
     def height(self): # 棋盘高度
