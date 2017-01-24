@@ -21,6 +21,7 @@ GameBoard for 围棋、象棋等棋类游戏的棋盘建模
         self.__pieceNameList = [] # 存储所有棋子的名字字符串, 初始状态为空列表
         # __battlefield[y][x] 对应坐标点 x,y 处的棋子ID, 初始值 0 表示格子上没有棋子
         self.__battlefield = [[0 for x in range(width)] for y in range(height)]
+        self.__survivors = {} # 字典映射记录棋盘上每个棋子的位置, 以棋子 pieceId 为键, 以绝对坐标为值
     def __del__(self):
         pass
     def dump(self, file):
@@ -65,6 +66,8 @@ GameBoard for 围棋、象棋等棋类游戏的棋盘建模
             if (y<0 or y>=self.__height):
                 raise ValueError('Error: Invalid coordinate=%s' % (str(coordinate)))
             self.__battlefield[y][x] = pieceId
+            # 注: 考虑以后需要独立更改 x 和 y 的坐标值, 下面存储坐标用的是 [x,y] 而不是 (x,y)
+            self.__survivors[pieceId] = [x, y] # 词典以 pieceId 为键, 以棋子坐标为值
         return (pieceId) # 返回值最小从 1 开始表示有棋子, pieceId==0 的棋盘格子无棋子
     def hasPieceAtCoordinate(self, coordinate):
         x,y = coordinate # coordinate 必须是 x,y 坐标形式 ----FIXME: 检查参数
@@ -78,16 +81,11 @@ GameBoard for 围棋、象棋等棋类游戏的棋盘建模
         # 备注: 棋盘上找不到棋子时直接抛出 ValueError 异常, 如果找到则返回坐标
         if not pieceId or pieceId<=0 or pieceId>len(self.__pieceNameList): # None 、负数或 0 均为无效棋子 ID
             raise ValueError('Error: Invalid ID=%s' % (str(pieceId)))
-        for y in range(self.__height):
-            l = self.__battlefield[y]
-            try:
-                x = l.index(pieceId)
-            except ValueError as e:
-                pass
-            else:
-                coordinate = [x, y]
-                return coordinate
-        raise ValueError('Notice: 棋盘上找不到棋子 %s' % (self.__pieceNameList[pieceId]))
+        try:
+            x,y = self.__survivors[pieceId]
+        except KeyError:
+            raise ValueError('Notice: 棋盘上找不到棋子 %s' % (self.__pieceNameList[pieceId]))
+        return x,y
     def movePieceToCoordinate(self, pieceId, coordinate):
         # 备注: 棋盘上找不到棋子时直接抛出 ValueError 异常, 如果找到则移动棋子到新坐标
         if not pieceId or pieceId<=0 or pieceId>len(self.__pieceNameList): # None 、负数或 0 均为无效棋子 ID
@@ -103,7 +101,13 @@ GameBoard for 围棋、象棋等棋类游戏的棋盘建模
             raise
         else:
             self.__battlefield[y0][x0] = 0
+        try: # 从棋盘上移除被吃掉的棋子
+            del self.__survivors[self.__battlefield[y][x]]
+        except KeyError:
+            pass
         self.__battlefield[y][x] = pieceId
+        # survivors 字典中的坐标值可以原地修改:
+        self.__survivors[pieceId][0],self.__survivors[pieceId][1] = x,y
 # 以下为模块自测试代码
 def main():
     import sys
@@ -122,53 +126,53 @@ def main():
             self.cannons = [None]*2
             self.pawns = [None]*5
     black = Player('黑方')
-    black.rooks[0] = brd.makeIdForNewChessPiece("車", [0, 9])
-    black.rooks[1] = brd.makeIdForNewChessPiece("車", [8, 9])
-    black.knights[0] = brd.makeIdForNewChessPiece("马", [1, 9])
-    black.knights[1] = brd.makeIdForNewChessPiece("马", [7, 9])
-    black.bishops[0] = brd.makeIdForNewChessPiece('象', [2, 9])
-    black.bishops[1] = brd.makeIdForNewChessPiece('象', [6, 9])
-    black.guards[0] = brd.makeIdForNewChessPiece('士', [3, 9])
-    black.guards[1] = brd.makeIdForNewChessPiece('士', [5, 9])
-    black.general = brd.makeIdForNewChessPiece('將', [4, 9])
-    black.cannons[0] = brd.makeIdForNewChessPiece('砲', [1, 7])
-    black.cannons[1] = brd.makeIdForNewChessPiece('砲', [7, 7])
-    black.pawns = [brd.makeIdForNewChessPiece('卒', [0, 6]),
-                   brd.makeIdForNewChessPiece('卒', [2, 6]),
-                   brd.makeIdForNewChessPiece('卒', [4, 6]),
-                   brd.makeIdForNewChessPiece('卒', [6, 6]),
-                   brd.makeIdForNewChessPiece('卒', [8, 6])]
+    black.rooks[0] = brd.makeIdForNewChessPiece("車", (0, 9))
+    black.rooks[1] = brd.makeIdForNewChessPiece("車", (8, 9))
+    black.knights[0] = brd.makeIdForNewChessPiece("马", (1, 9))
+    black.knights[1] = brd.makeIdForNewChessPiece("马", (7, 9))
+    black.bishops[0] = brd.makeIdForNewChessPiece('象', (2, 9))
+    black.bishops[1] = brd.makeIdForNewChessPiece('象', (6, 9))
+    black.guards[0] = brd.makeIdForNewChessPiece('士', (3, 9))
+    black.guards[1] = brd.makeIdForNewChessPiece('士', (5, 9))
+    black.general = brd.makeIdForNewChessPiece('將', (4, 9))
+    black.cannons[0] = brd.makeIdForNewChessPiece('砲', (1, 7))
+    black.cannons[1] = brd.makeIdForNewChessPiece('砲', (7, 7))
+    black.pawns = [brd.makeIdForNewChessPiece('卒', (0, 6)),
+                   brd.makeIdForNewChessPiece('卒', (2, 6)),
+                   brd.makeIdForNewChessPiece('卒', (4, 6)),
+                   brd.makeIdForNewChessPiece('卒', (6, 6)),
+                   brd.makeIdForNewChessPiece('卒', (8, 6))]
     red = Player('红方')
-    red.rooks[0] = brd.makeIdForNewChessPiece("俥", [0, 0])
-    red.rooks[1] = brd.makeIdForNewChessPiece("俥", [8, 0])
-    red.knights[0] = brd.makeIdForNewChessPiece("馬", [1, 0])
-    red.knights[1] = brd.makeIdForNewChessPiece("馬", [7, 0])
-    red.bishops[0] = brd.makeIdForNewChessPiece('相', [2, 0])
-    red.bishops[1] = brd.makeIdForNewChessPiece('相', [6, 0])
-    red.guards[0] = brd.makeIdForNewChessPiece('仕', [3, 0])
-    red.guards[1] = brd.makeIdForNewChessPiece('仕', [5, 0])
-    red.general = brd.makeIdForNewChessPiece('帥', [4, 0])
-    red.cannons[0] = brd.makeIdForNewChessPiece('炮', [1, 2])
-    red.cannons[1] = brd.makeIdForNewChessPiece('炮', [7, 2])
-    red.pawns = [brd.makeIdForNewChessPiece('兵', [0, 3]),
-                 brd.makeIdForNewChessPiece('兵', [2, 3]),
-                 brd.makeIdForNewChessPiece('兵', [4, 3]),
-                 brd.makeIdForNewChessPiece('兵', [6, 3]),
-                 brd.makeIdForNewChessPiece('兵', [8, 3])]
+    red.rooks[0] = brd.makeIdForNewChessPiece("俥", (0, 0))
+    red.rooks[1] = brd.makeIdForNewChessPiece("俥", (8, 0))
+    red.knights[0] = brd.makeIdForNewChessPiece("馬", (1, 0))
+    red.knights[1] = brd.makeIdForNewChessPiece("馬", (7, 0))
+    red.bishops[0] = brd.makeIdForNewChessPiece('相', (2, 0))
+    red.bishops[1] = brd.makeIdForNewChessPiece('相', (6, 0))
+    red.guards[0] = brd.makeIdForNewChessPiece('仕', (3, 0))
+    red.guards[1] = brd.makeIdForNewChessPiece('仕', (5, 0))
+    red.general = brd.makeIdForNewChessPiece('帥', (4, 0))
+    red.cannons[0] = brd.makeIdForNewChessPiece('炮', (1, 2))
+    red.cannons[1] = brd.makeIdForNewChessPiece('炮', (7, 2))
+    red.pawns = [brd.makeIdForNewChessPiece('兵', (0, 3)),
+                 brd.makeIdForNewChessPiece('兵', (2, 3)),
+                 brd.makeIdForNewChessPiece('兵', (4, 3)),
+                 brd.makeIdForNewChessPiece('兵', (6, 3)),
+                 brd.makeIdForNewChessPiece('兵', (8, 3))]
     brd.dump(sys.stdout)
     print()
 
-    brd.movePieceToCoordinate(red.cannons[0], [4, 2])
+    brd.movePieceToCoordinate(red.cannons[0], (4, 2))
     print('红棋炮二平五：')
     brd.dump(sys.stdout)
     print()
 
-    brd.movePieceToCoordinate(black.knights[0], [2, 7])
+    brd.movePieceToCoordinate(black.knights[0], (2, 7))
     print('黑棋马8进7：')
     brd.dump(sys.stdout)
     print()
 
-    brd.movePieceToCoordinate(red.cannons[0], [4, 6])
+    brd.movePieceToCoordinate(red.cannons[0], (4, 6))
     print('红棋炮五进四(吃卒)：')
     brd.dump(sys.stdout)
     print()
@@ -185,7 +189,7 @@ def main():
         俥馬相仕帥仕相馬俥
         """
 
-    brd.movePieceToCoordinate(black.knights[0], [4, 6])
+    brd.movePieceToCoordinate(black.knights[0], (4, 6))
     print('黑棋马7进5(吃炮)：')
     brd.dump(sys.stdout)
     game = """
