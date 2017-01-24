@@ -54,9 +54,17 @@ GameBoard for 围棋、象棋等棋类游戏的棋盘建模
             debugdumpfile.close()
     def makeIdForNewChessPiece(self, pieceName="", coordinate=None):
         self.__pieceNameList.append(pieceName)
-        x,y = coordinate
         pieceId = len(self.__pieceNameList)
-        self.__battlefield[y][x] = pieceId
+        try:
+            x,y = coordinate
+        except ValueError: # coordinate 必须是 x,y 坐标形式, 否则触发 ValueError 异常
+            pass           # 注: 这里允许调用者定义一开始不放在棋盘上的棋子
+        else:
+            if (x<0 or x>=self.__width):
+                raise ValueError('Error: Invalid coordinate=%s' % (str(coordinate)))
+            if (y<0 or y>=self.__height):
+                raise ValueError('Error: Invalid coordinate=%s' % (str(coordinate)))
+            self.__battlefield[y][x] = pieceId
         return (pieceId) # 返回值最小从 1 开始表示有棋子, pieceId==0 的棋盘格子无棋子
     def hasPieceAtCoordinate(self, coordinate):
         x,y = coordinate # coordinate 必须是 x,y 坐标形式 ----FIXME: 检查参数
