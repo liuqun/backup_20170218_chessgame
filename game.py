@@ -196,12 +196,12 @@ def main():
     print()
 
     brd.movePieceToCoordinate(red.cannons[0], (4, 2))
-    print('红棋炮二平五：')
+    print('红棋炮八平五：')
     brd.dump(sys.stdout)
     print()
 
     brd.movePieceToCoordinate(black.knights[0], (2, 7))
-    print('黑棋马8进7：')
+    print('黑棋马2进3：')
     brd.dump(sys.stdout)
     print()
 
@@ -223,7 +223,7 @@ def main():
         """
 
     brd.movePieceToCoordinate(black.knights[0], (4, 6))
-    print('黑棋马7进5(吃炮)：')
+    print('黑棋马3进5(吃炮)：')
     brd.dump(sys.stdout)
     game = """
         車┬象士將士象马車
