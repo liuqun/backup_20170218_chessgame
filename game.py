@@ -52,6 +52,26 @@ class GameBoard:
             print(file=debugdumpfile)
         if not file:
             debugdumpfile.close()
+    # row(y) --- 返回 y 行上的所有棋子的编号, y 最小值 0
+    def row(self, y):
+        if (y<0 or y>=self.__height):
+            raise ValueError('Error: Invalid coordinate y=%d (acceptable range: from min=0 to max=%d)' % (y, self.__height-1))
+        pieces = {}
+        for x in range(self.__width):
+            id = self.__battlefield[y][x]
+            if id and id>0:
+                pieces[x] = id #; pieceName = self.__pieceNameList[id-1] ; print(pieceName, end='')
+        return pieces
+    # column(x) --- 返回 x 列上的所有棋子的编号, x 最小值 0
+    def column(self, x):
+        if (x<0 or x>=self.__width):
+            raise ValueError('Error: Invalid coordinate x=%d (acceptable range: from min=0 to max=%d)' % (x, self.__width-1))
+        pieces = {}
+        for y in range(self.__height):
+            id = self.__battlefield[y][x]
+            if id and id>0:
+                pieces[y] = id #; pieceName = self.__pieceNameList[id-1] ; print(pieceName)
+        return pieces
     def makeIdForNewChessPiece(self, pieceName="", coordinate=None, playerName=""):
         self.__pieceNameList.append(pieceName)
         pieceId = len(self.__pieceNameList)
