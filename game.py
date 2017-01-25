@@ -108,8 +108,7 @@ class GameBoard:
         except KeyError:
             pass
         self.__battlefield[y][x] = pieceId
-        # survivors 字典中的坐标值可以原地修改:
-        self.__survivors[pieceId][0],self.__survivors[pieceId][1] = x,y
+        self.__survivors[pieceId] = [x,y]
 # 以下为模块自测试代码
 def main():
     import sys
