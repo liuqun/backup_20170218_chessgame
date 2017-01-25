@@ -130,6 +130,17 @@ class GameBoard:
             pass
         self.__battlefield[y][x] = pieceId
         self.__survivors[pieceId] = [x,y]
+    def position(self, playerName=None): # 棋盘上双方或某一方玩家剩余的棋子
+        if not playerName:
+            return self.__survivors.copy()
+        if playerName:
+            try:
+                pieces = self.__players[playerName]
+            except KeyError:
+                result = {}
+            else:
+                result = {k:v for k,v in self.__survivors.items() if (k in pieces)}
+        return result
 # 以下为模块自测试代码
 def main():
     import sys
