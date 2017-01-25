@@ -88,8 +88,9 @@ class GameBoard:
         except KeyError:
             raise ValueError('Notice: 棋盘上找不到棋子 %s' % (self.__pieceNameList[pieceId]))
         return x,y
+    # movePieceToCoordinate(id, (x,y)) --- 将编号为 id 的棋子移动到坐标 (x,y) 处
     def movePieceToCoordinate(self, pieceId, coordinate):
-        # 备注: 棋盘上找不到棋子时直接抛出 ValueError 异常, 如果找到则移动棋子到新坐标
+        # 备注: 找不到编号为 pieceId 的棋子时直接抛出 ValueError 异常, 如果找到则移动棋子到新坐标
         if not pieceId or pieceId<=0 or pieceId>len(self.__pieceNameList): # None 、负数或 0 均为无效棋子 ID
             raise ValueError('Error: Invalid ID=%s' % (str(pieceId)))
         x,y = coordinate # coordinate 必须是 x,y 坐标形式 ----FIXME: 检查参数
@@ -98,11 +99,11 @@ class GameBoard:
         if (y<0 or y>=self.__height):
             raise ValueError('Error: Invalid coordinate=%s' % (str(coordinate)))
         try:
-            x0,y0 = self.findPiece(pieceId)
-        except ValueError as e:
-            raise
+            past = self.__survivors[pieceId] # get the piece's coordinate in the past
+        except KeyError:
+            pass
         else:
-            self.__battlefield[y0][x0] = 0
+            self.__battlefield[past[1]][past[0]] = 0 # clear foot-prints of the past
         try: # 从棋盘上移除被吃掉的棋子
             del self.__survivors[self.__battlefield[y][x]]
         except KeyError:
