@@ -56,8 +56,8 @@ class GameBoard:
         pieceId = len(self.__pieceNameList)
         try:
             x,y = coordinate
-        except ValueError: # coordinate 必须是 x,y 坐标形式, 否则触发 ValueError 异常
-            pass           # 注: 这里允许调用者定义一开始不放在棋盘上的棋子
+        except TypeError: # coordinate 必须是 x,y 坐标形式, 否则触发 TypeError 异常
+            pass          # 注: 这里允许调用者定义一开始不放在棋盘上的棋子
         else:
             if (x<0 or x>=self.__width):
                 raise ValueError('Error: Invalid coordinate=%s' % (str(coordinate)))
