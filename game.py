@@ -17,6 +17,7 @@ class GameBoard:
         self.__width = width
         self.__height = height
         self.__pieceNameList = [] # 存储所有棋子的名字字符串, 初始状态为空列表
+        self.__players = {} # 存储每个玩家各自拥有的所有棋子的编号, 以玩家名称为键分别存储
         # __battlefield[y][x] 对应坐标点 x,y 处的棋子ID, 初始值 0 表示格子上没有棋子
         self.__battlefield = [[0 for x in range(width)] for y in range(height)]
         self.__survivors = {} # 字典映射记录棋盘上每个棋子的位置, 以棋子 pieceId 为键, 以绝对坐标为值
@@ -51,7 +52,7 @@ class GameBoard:
             print(file=debugdumpfile)
         if not file:
             debugdumpfile.close()
-    def makeIdForNewChessPiece(self, pieceName="", coordinate=None):
+    def makeIdForNewChessPiece(self, pieceName="", coordinate=None, playerName=""):
         self.__pieceNameList.append(pieceName)
         pieceId = len(self.__pieceNameList)
         try:
@@ -66,6 +67,9 @@ class GameBoard:
             self.__battlefield[y][x] = pieceId
             # 注: 考虑以后需要独立更改 x 和 y 的坐标值, 下面存储坐标用的是 [x,y] 而不是 (x,y)
             self.__survivors[pieceId] = [x, y] # 词典以 pieceId 为键, 以棋子坐标为值
+        if playerName not in self.__players:
+            self.__players[playerName] = []
+        self.__players[playerName].append(pieceId)
         return (pieceId) # 返回值最小从 1 开始表示有棋子, pieceId==0 的棋盘格子无棋子
     def hasPieceAtCoordinate(self, coordinate):
         x,y = coordinate # coordinate 必须是 x,y 坐标形式 ----FIXME: 检查参数
