@@ -141,6 +141,49 @@ class GameBoard:
             else:
                 result = {k:v for k,v in self.__survivors.items() if (k in pieces)}
         return result
+    # --- “車”的正十字形最大活动范围：
+    def rookMoveRange(self, x, y):
+        assert(0 <= x < self.__width)
+        assert(0 <= y < self.__height)
+        return set((i, y) for i in range(self.__width)) ^ set((x, j) for j in range(self.__height))
+    # --- “馬”的最大活动范围：
+    def knightMoveRange(self, x, y):
+        """ knightMoveRange --- “馬”的最大活动范围
+        # 示意图：
+        #
+        # 　　↖　↗
+        # 　↖　｜　↗
+        # 　　—馬—
+        # 　↙　｜　↘
+        # 　　↙　↘
+        #
+        # 棋子走法：先直走一格再斜走一格，这里暂时不考虑蹩马腿的情况
+        # 坐标值计算判定：
+        # 起点坐标 (x,y)
+        # 终点坐标 (i,j)
+        # 例如从 (0,0) 到 (1,2) 或从 (0,0) 到 (2,1)
+        # 根据直角三角形勾股定理，斜边的平方等于直角边的平方和
+        # c^2 = a^2 + b^2
+        #     = (x-i)^2 + (y-j)^2
+        #     = 1 + 4
+        #     = 5
+        """
+        assert(0 <= x < self.__width)
+        assert(0 <= y < self.__height)
+        # 以马为中心生成一个 5*5 点阵的正方形区域，然后裁剪掉超出棋盘边界的部分：
+        squareRange = NewRectangularRange(5, 5, x-2, y-2)
+        rectRange = {(i, j) for (i, j) in squareRange if ((0 <= i < self.__width) and (0 <= j < self.__height))}
+        # 根据勾股定理判断符合条件的终点坐标：
+        return {(i, j) for (i, j) in rectRange if ((x-i)**2 + (y-j)**2 == 5)}
+
+
+# NewRectangularRange -- 长方形区域, 定义左下角坐标从 x0,y0 起, 点阵尺寸 = rectangleWidth*rectangleHeight, 点阵最少可以是单行、单列或者单个点
+def NewRectangularRange(rectangleWidth, rectangleHeight, x0, y0):
+    assert(rectangleWidth > 0)
+    assert(rectangleHeight > 0)
+    return {(x+x0, y+y0) for x in range(rectangleWidth) for y in range(rectangleHeight)}
+
+
 # 以下为模块自测试代码
 def main():
     import sys
