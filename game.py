@@ -170,11 +170,15 @@ class GameBoard:
         """
         assert(0 <= x < self.__width)
         assert(0 <= y < self.__height)
-        # 以马为中心生成一个 5*5 点阵的正方形区域，然后裁剪掉超出棋盘边界的部分：
-        squareRange = NewRectangularRange(5, 5, x-2, y-2)
-        rectRange = {(i, j) for (i, j) in squareRange if ((0 <= i < self.__width) and (0 <= j < self.__height))}
-        # 根据勾股定理判断符合条件的终点坐标：
-        return {(i, j) for (i, j) in rectRange if ((x-i)**2 + (y-j)**2 == 5)}
+        # 挑出以马为中心, 距离(或斜线距离)为 2 格的 5*5 正方形区域:
+        # □☒□☒□
+        # ☒　　　☒
+        # □　馬　□
+        # ☒　　　☒
+        # □☒□☒□
+        box = NewRangeByDistance(2, x, y)
+        # 裁剪掉超出棋盘边界的部分, 同时根据勾股定理判断符合条件的终点坐标：
+        return {(i, j) for (i, j) in box if ((0 <= i < self.__width) and (0 <= j < self.__height) and ((x-i)**2 + (y-j)**2 == 5))}
 
 
 # NewRangeByDistance --- 到中心坐标点 (centerX,centerY) 距离为 distance 的点的集合
