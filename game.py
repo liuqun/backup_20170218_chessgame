@@ -191,6 +191,24 @@ class GameBoard:
         box = NewRangeByDistance(1, x, y)
         # 裁剪掉超出棋盘边界的部分：
         return {(i, j) for (i, j) in box if ((0 <= i < self.__width) and (0 <= j < self.__height))}
+    # --- 国际象棋的“后”的最大活动范围
+    def queenMoveRange(self, x, y):
+        """ queenMoveRange　--- 国际象棋的“后”可以直走斜走任意格，同时具备車和象的功能
+        """
+        assert(0 <= x < self.__width)
+        assert(0 <= y < self.__height)
+        return self.rookMoveRange(x, y) | self.bishopMoveRange(x, y)
+    # --- 国际象棋的“象”的最大活动范围
+    def bishopMoveRange(self, x, y):
+        """ bishopMoveRange　--- 国际象棋的“象”可以斜走任意格
+        # 对应的线性方程为：
+        # y-y0 = k(x-x0)
+        # 斜率 k = ±1
+        # y-y0 = ±(x-x0)
+        """
+        assert(0 <= x < self.__width)
+        assert(0 <= y < self.__height)
+        return {(i, j) for i in range(self.__width) for j in range(self.__height) if abs(y-j) == abs(x-i)}
 
 
 # NewRangeByDistance --- 到中心坐标点 (centerX,centerY) 距离为 distance 的点的集合
