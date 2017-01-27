@@ -179,6 +179,18 @@ class GameBoard:
         box = NewRangeByDistance(2, x, y)
         # 裁剪掉超出棋盘边界的部分, 同时根据勾股定理判断符合条件的终点坐标：
         return {(i, j) for (i, j) in box if ((0 <= i < self.__width) and (0 <= j < self.__height) and ((x-i)**2 + (y-j)**2 == 5))}
+    # --- 国际象棋的“王”的最大活动范围
+    def kingMoveRange(self, x, y):
+        """ kingMoveRange　--- 国际象棋的“王”可以直走或斜走1格，暂时不考虑“王车易位”特殊情况
+        # 示意图：
+        # ↖↑↗
+        # ←♔→
+        # ↙↓↘
+        """
+        # 以王为中心划出 3*3 的 9 格正方形：
+        box = NewRangeByDistance(1, x, y)
+        # 裁剪掉超出棋盘边界的部分：
+        return {(i, j) for (i, j) in box if ((0 <= i < self.__width) and (0 <= j < self.__height))}
 
 
 # NewRangeByDistance --- 到中心坐标点 (centerX,centerY) 距离为 distance 的点的集合
