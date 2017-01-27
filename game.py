@@ -177,6 +177,13 @@ class GameBoard:
         return {(i, j) for (i, j) in rectRange if ((x-i)**2 + (y-j)**2 == 5)}
 
 
+# NewRangeByDistance --- 到中心坐标点 (centerX,centerY) 距离为 distance 的点的集合
+def NewRangeByDistance(distance, centerX, centerY):
+    d = int(distance)
+    assert(d > 0)
+    return {(centerX+x, centerY+y) for x in range(-d,d+1) for y in range(-d,d+1) if (abs(x)==d or abs(y)==d)}
+
+
 # NewRectangularRange -- 长方形区域, 定义左下角坐标从 x0,y0 起, 点阵尺寸 = rectangleWidth*rectangleHeight, 点阵最少可以是单行、单列或者单个点
 def NewRectangularRange(rectangleWidth, rectangleHeight, x0, y0):
     assert(rectangleWidth > 0)
