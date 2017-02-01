@@ -21,8 +21,6 @@ class GameBoard:
         # __battlefield[y][x] 对应坐标点 x,y 处的棋子ID, 初始值 0 表示格子上没有棋子
         self.__battlefield = [[0 for x in range(width)] for y in range(height)]
         self.__survivors = {} # 字典映射记录棋盘上每个棋子的位置, 以棋子 pieceId 为键, 以绝对坐标为值
-    def __del__(self):
-        pass
     def dump(self, file):
         borad=[
             '┌┬┬┲┳┱┬┬┐',
