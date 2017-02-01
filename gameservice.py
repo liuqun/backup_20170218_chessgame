@@ -55,7 +55,7 @@ def main():
     svc = GameService([RED_PLAYER_ID, BLACK_PLAYER_ID], [red.name(), black.name()])
     print('%(total)d 位棋手已经就位' % {'total': svc.total_players()})
 
-    from game import GameBoard
+    from gameboard import GameBoard
     brd = GameBoard(9, 10)
     black.rooks[0] = brd.make_id_for_new_chess_piece(BLACK_PLAYER_ID, "車", (0, 9))
     black.rooks[1] = brd.make_id_for_new_chess_piece(BLACK_PLAYER_ID, "車", (8, 9))
@@ -98,7 +98,7 @@ def main():
     i = svc.get_current_player_id()
     player = PLAYER_TABLE[i]
     piece_selected = player.cannons[0]
-    brd.movePieceToCoordinate(piece_selected, (4, 2))
+    brd.move_piece_to_coordinate(piece_selected, (4, 2))
     print('[%(player_name)s]炮八平五：' % {'player_name': player.name()})
     brd.dump(sys.stdout)
     print()
@@ -107,7 +107,7 @@ def main():
     i = svc.get_current_player_id()
     player = PLAYER_TABLE[i]
     piece_selected = player.knights[0]
-    brd.movePieceToCoordinate(piece_selected, (2, 7))
+    brd.move_piece_to_coordinate(piece_selected, (2, 7))
     print('黑棋马2进3：')
     brd.dump(sys.stdout)
     print()
@@ -115,7 +115,7 @@ def main():
 
     i = svc.get_current_player_id()
     player = PLAYER_TABLE[i]
-    brd.movePieceToCoordinate(player.cannons[0], (4, 6))
+    brd.move_piece_to_coordinate(player.cannons[0], (4, 6))
     print('红棋炮五进四(吃卒)：')
     brd.dump(sys.stdout)
     print()
@@ -135,7 +135,7 @@ def main():
 
     i = svc.get_current_player_id()
     player = PLAYER_TABLE[i]
-    brd.movePieceToCoordinate(player.knights[0], (4, 6))
+    brd.move_piece_to_coordinate(player.knights[0], (4, 6))
     print('黑棋马3进5(吃炮)：')
     brd.dump(sys.stdout)
     game = """
