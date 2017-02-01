@@ -22,7 +22,7 @@ class GameBoard:
         self.__battlefield = [[0 for x in range(width)] for y in range(height)]
         self.__survivors = {} # 字典映射记录棋盘上每个棋子的位置, 以棋子 pieceId 为键, 以绝对坐标为值
     def dump(self, file):
-        borad=[
+        board = [
             '┌┬┬┲┳┱┬┬┐',
             '├┼┼╊╳╉┼┼┤',
             '├╬┼╄╇╃┼╬┤',
@@ -33,7 +33,7 @@ class GameBoard:
             '├╬┼╆╈╅┼╬┤',
             '├┼┼╊╳╉┼┼┤',
             '└┴┴┺┻┹┴┴┘']
-        borad.reverse()
+        board.reverse()
         debugdumpfile = file
         if not file:
             import os
@@ -43,7 +43,7 @@ class GameBoard:
             for x in range(self.__width):
                 id = self.__battlefield[y][x]
                 if not id or id<=0: # 0 表示当前格子无棋子, id=None 时也满足该条件, id<0 为异常状态
-                    name = borad[y][x]
+                    name = board[y][x]
                 else:
                     name = self.__pieceNameList[id-1] # 备忘: ID 最小值是从 1 开始的, 但数组下标是从 0 开始的
                 print(name, end='', file=debugdumpfile)
