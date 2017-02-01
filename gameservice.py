@@ -55,6 +55,103 @@ def main():
     svc = GameService([RED_PLAYER_ID, BLACK_PLAYER_ID], [red.name(), black.name()])
     print('%(total)d 位棋手已经就位' % {'total': svc.total_players()})
 
+    from game import GameBoard
+    brd = GameBoard(9, 10)
+    black.rooks[0] = brd.make_id_for_new_chess_piece(BLACK_PLAYER_ID, "車", (0, 9))
+    black.rooks[1] = brd.make_id_for_new_chess_piece(BLACK_PLAYER_ID, "車", (8, 9))
+    black.knights[0] = brd.make_id_for_new_chess_piece(BLACK_PLAYER_ID, "马", (1, 9))
+    black.knights[1] = brd.make_id_for_new_chess_piece(BLACK_PLAYER_ID, "马", (7, 9))
+    black.bishops[0] = brd.make_id_for_new_chess_piece(BLACK_PLAYER_ID, '象', (2, 9))
+    black.bishops[1] = brd.make_id_for_new_chess_piece(BLACK_PLAYER_ID, '象', (6, 9))
+    black.guards[0] = brd.make_id_for_new_chess_piece(BLACK_PLAYER_ID, '士', (3, 9))
+    black.guards[1] = brd.make_id_for_new_chess_piece(BLACK_PLAYER_ID, '士', (5, 9))
+    black.general = brd.make_id_for_new_chess_piece(BLACK_PLAYER_ID, '將', (4, 9))
+    black.cannons[0] = brd.make_id_for_new_chess_piece(BLACK_PLAYER_ID, '砲', (1, 7))
+    black.cannons[1] = brd.make_id_for_new_chess_piece(BLACK_PLAYER_ID, '砲', (7, 7))
+    black.pawns = [brd.make_id_for_new_chess_piece(BLACK_PLAYER_ID, '卒', (0, 6)),
+                   brd.make_id_for_new_chess_piece(BLACK_PLAYER_ID, '卒', (2, 6)),
+                   brd.make_id_for_new_chess_piece(BLACK_PLAYER_ID, '卒', (4, 6)),
+                   brd.make_id_for_new_chess_piece(BLACK_PLAYER_ID, '卒', (6, 6)),
+                   brd.make_id_for_new_chess_piece(BLACK_PLAYER_ID, '卒', (8, 6))]
+    red.rooks[0] = brd.make_id_for_new_chess_piece(RED_PLAYER_ID, "俥", (0, 0))
+    red.rooks[1] = brd.make_id_for_new_chess_piece(RED_PLAYER_ID, "俥", (8, 0))
+    red.knights[0] = brd.make_id_for_new_chess_piece(RED_PLAYER_ID, "馬", (1, 0))
+    red.knights[1] = brd.make_id_for_new_chess_piece(RED_PLAYER_ID, "馬", (7, 0))
+    red.bishops[0] = brd.make_id_for_new_chess_piece(RED_PLAYER_ID, '相', (2, 0))
+    red.bishops[1] = brd.make_id_for_new_chess_piece(RED_PLAYER_ID, '相', (6, 0))
+    red.guards[0] = brd.make_id_for_new_chess_piece(RED_PLAYER_ID, '仕', (3, 0))
+    red.guards[1] = brd.make_id_for_new_chess_piece(RED_PLAYER_ID, '仕', (5, 0))
+    red.general = brd.make_id_for_new_chess_piece(RED_PLAYER_ID, '帥', (4, 0))
+    red.cannons[0] = brd.make_id_for_new_chess_piece(RED_PLAYER_ID, '炮', (1, 2))
+    red.cannons[1] = brd.make_id_for_new_chess_piece(RED_PLAYER_ID, '炮', (7, 2))
+    red.pawns = [brd.make_id_for_new_chess_piece(RED_PLAYER_ID, '兵', (0, 3)),
+                 brd.make_id_for_new_chess_piece(RED_PLAYER_ID, '兵', (2, 3)),
+                 brd.make_id_for_new_chess_piece(RED_PLAYER_ID, '兵', (4, 3)),
+                 brd.make_id_for_new_chess_piece(RED_PLAYER_ID, '兵', (6, 3)),
+                 brd.make_id_for_new_chess_piece(RED_PLAYER_ID, '兵', (8, 3))]
+    import sys
+    brd.dump(sys.stdout)
+    print()
+
+    PLAYER_TABLE = {BLACK_PLAYER_ID: black, RED_PLAYER_ID: red}
+
+    i = svc.get_current_player_id()
+    player = PLAYER_TABLE[i]
+    piece_selected = player.cannons[0]
+    brd.movePieceToCoordinate(piece_selected, (4, 2))
+    print('[%(player_name)s]炮八平五：' % {'player_name': player.name()})
+    brd.dump(sys.stdout)
+    print()
+    svc.end_this_turn()
+
+    i = svc.get_current_player_id()
+    player = PLAYER_TABLE[i]
+    piece_selected = player.knights[0]
+    brd.movePieceToCoordinate(piece_selected, (2, 7))
+    print('黑棋马2进3：')
+    brd.dump(sys.stdout)
+    print()
+    svc.end_this_turn()
+
+    i = svc.get_current_player_id()
+    player = PLAYER_TABLE[i]
+    brd.movePieceToCoordinate(player.cannons[0], (4, 6))
+    print('红棋炮五进四(吃卒)：')
+    brd.dump(sys.stdout)
+    print()
+    game = """
+        車┬象士將士象马車
+        ├┼┼╊╳╉┼┼┤
+        ├砲马╄╇╃┼砲┤
+        卒┼卒┼炮┼卒┼卒
+        ├┴┴┴┴┴┴┴┤
+        ├┬┬┬┬┬┬┬┤
+        兵┼兵┼兵┼兵┼兵
+        ├╬┼╆╈╅┼炮┤
+        ├┼┼╊╳╉┼┼┤
+        俥馬相仕帥仕相馬俥
+        """
+    svc.end_this_turn()
+
+    i = svc.get_current_player_id()
+    player = PLAYER_TABLE[i]
+    brd.movePieceToCoordinate(player.knights[0], (4, 6))
+    print('黑棋马3进5(吃炮)：')
+    brd.dump(sys.stdout)
+    game = """
+        車┬象士將士象马車
+        ├┼┼╊╳╉┼┼┤
+        ├砲┼╄╇╃┼砲┤
+        卒┼卒┼马┼卒┼卒
+        ├┴┴┴┴┴┴┴┤
+        ├┬┬┬┬┬┬┬┤
+        兵┼兵┼兵┼兵┼兵
+        ├╬┼╆╈╅┼炮┤
+        ├┼┼╊╳╉┼┼┤
+        俥馬相仕帥仕相馬俥
+        """
+    svc.end_this_turn()
+
 
 if '__main__' == __name__ :
     main()
