@@ -226,99 +226,9 @@ def NewRectangularRange(rectangleWidth, rectangleHeight, x0, y0):
 
 # 以下为模块自测试代码
 def main():
-    import sys
     global __name__
     print('模块名：', __name__)
-    print('创建中国象棋初始棋盘')
-    brd = GameBoard(9, 10)
-    class Player:
-         def __init__(self, name):
-            self.__name = name
-            self.rooks = [None]*2
-            self.knights = [None]*2
-            self.bishops = [None]*2
-            self.guards = [None]*2
-            self.general = None
-            self.cannons = [None]*2
-            self.pawns = [None]*5
-    black = Player('黑方')
-    black.rooks[0] = brd.makeIdForNewChessPiece("車", (0, 9))
-    black.rooks[1] = brd.makeIdForNewChessPiece("車", (8, 9))
-    black.knights[0] = brd.makeIdForNewChessPiece("马", (1, 9))
-    black.knights[1] = brd.makeIdForNewChessPiece("马", (7, 9))
-    black.bishops[0] = brd.makeIdForNewChessPiece('象', (2, 9))
-    black.bishops[1] = brd.makeIdForNewChessPiece('象', (6, 9))
-    black.guards[0] = brd.makeIdForNewChessPiece('士', (3, 9))
-    black.guards[1] = brd.makeIdForNewChessPiece('士', (5, 9))
-    black.general = brd.makeIdForNewChessPiece('將', (4, 9))
-    black.cannons[0] = brd.makeIdForNewChessPiece('砲', (1, 7))
-    black.cannons[1] = brd.makeIdForNewChessPiece('砲', (7, 7))
-    black.pawns = [brd.makeIdForNewChessPiece('卒', (0, 6)),
-                   brd.makeIdForNewChessPiece('卒', (2, 6)),
-                   brd.makeIdForNewChessPiece('卒', (4, 6)),
-                   brd.makeIdForNewChessPiece('卒', (6, 6)),
-                   brd.makeIdForNewChessPiece('卒', (8, 6))]
-    red = Player('红方')
-    red.rooks[0] = brd.makeIdForNewChessPiece("俥", (0, 0))
-    red.rooks[1] = brd.makeIdForNewChessPiece("俥", (8, 0))
-    red.knights[0] = brd.makeIdForNewChessPiece("馬", (1, 0))
-    red.knights[1] = brd.makeIdForNewChessPiece("馬", (7, 0))
-    red.bishops[0] = brd.makeIdForNewChessPiece('相', (2, 0))
-    red.bishops[1] = brd.makeIdForNewChessPiece('相', (6, 0))
-    red.guards[0] = brd.makeIdForNewChessPiece('仕', (3, 0))
-    red.guards[1] = brd.makeIdForNewChessPiece('仕', (5, 0))
-    red.general = brd.makeIdForNewChessPiece('帥', (4, 0))
-    red.cannons[0] = brd.makeIdForNewChessPiece('炮', (1, 2))
-    red.cannons[1] = brd.makeIdForNewChessPiece('炮', (7, 2))
-    red.pawns = [brd.makeIdForNewChessPiece('兵', (0, 3)),
-                 brd.makeIdForNewChessPiece('兵', (2, 3)),
-                 brd.makeIdForNewChessPiece('兵', (4, 3)),
-                 brd.makeIdForNewChessPiece('兵', (6, 3)),
-                 brd.makeIdForNewChessPiece('兵', (8, 3))]
-    brd.dump(sys.stdout)
-    print()
 
-    brd.movePieceToCoordinate(red.cannons[0], (4, 2))
-    print('红棋炮八平五：')
-    brd.dump(sys.stdout)
-    print()
 
-    brd.movePieceToCoordinate(black.knights[0], (2, 7))
-    print('黑棋马2进3：')
-    brd.dump(sys.stdout)
-    print()
-
-    brd.movePieceToCoordinate(red.cannons[0], (4, 6))
-    print('红棋炮五进四(吃卒)：')
-    brd.dump(sys.stdout)
-    print()
-    game = """
-        車┬象士將士象马車
-        ├┼┼╊╳╉┼┼┤
-        ├砲马╄╇╃┼砲┤
-        卒┼卒┼炮┼卒┼卒
-        ├┴┴┴┴┴┴┴┤
-        ├┬┬┬┬┬┬┬┤
-        兵┼兵┼兵┼兵┼兵
-        ├╬┼╆╈╅┼炮┤
-        ├┼┼╊╳╉┼┼┤
-        俥馬相仕帥仕相馬俥
-        """
-
-    brd.movePieceToCoordinate(black.knights[0], (4, 6))
-    print('黑棋马3进5(吃炮)：')
-    brd.dump(sys.stdout)
-    game = """
-        車┬象士將士象马車
-        ├┼┼╊╳╉┼┼┤
-        ├砲┼╄╇╃┼砲┤
-        卒┼卒┼马┼卒┼卒
-        ├┴┴┴┴┴┴┴┤
-        ├┬┬┬┬┬┬┬┤
-        兵┼兵┼兵┼兵┼兵
-        ├╬┼╆╈╅┼炮┤
-        ├┼┼╊╳╉┼┼┤
-        俥馬相仕帥仕相馬俥
-        """
 if '__main__' == __name__ :
     main()
