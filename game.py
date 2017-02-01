@@ -133,13 +133,12 @@ class GameBoard:
     def position(self, playerName=None): # 棋盘上双方或某一方玩家剩余的棋子
         if not playerName:
             return self.__survivors.copy()
-        if playerName:
-            try:
-                pieces = self.__players[playerName]
-            except KeyError:
-                result = {}
-            else:
-                result = {k:v for k,v in self.__survivors.items() if (k in pieces)}
+        try:
+            pieces = self.__players[playerName]
+        except KeyError:
+            result = {}
+        else:
+            result = {k:v for k,v in self.__survivors.items() if (k in pieces)}
         return result
     # --- “車”的正十字形最大活动范围：
     def rookMoveRange(self, x, y):
