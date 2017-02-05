@@ -72,6 +72,22 @@ class GameBoard:
         self.__players[owner].append(piece_id)
         return piece_id  # 返回值最小从 1 开始表示有棋子, piece_id==0 的棋盘格子无棋子
 
+    def change_piece_name(self, piece_id, new_name):
+        if not piece_id or piece_id <= 0:
+            raise ValueError('invaild piece_id=%(pid)d' % {'pid': piece_id})
+        try:
+            self.__piece_name_list[piece_id - 1] = new_name
+        except IndexError:
+            raise ValueError('invaild piece_id=%(pid)d' % {'pid': piece_id})
+
+    def get_piece_name_by_piece_id(self, piece_id):
+        if not piece_id or piece_id <= 0:
+            raise ValueError('invaild piece_id=%(pid)d' % {'pid': piece_id})
+        try:
+            return self.__piece_name_list[piece_id - 1]
+        except IndexError:
+            raise ValueError('invaild piece_id=%(pid)d' % {'pid': piece_id})
+
     def has_piece_at_coordinate(self, coordinate):
         """has_piece_at_coordinate((x,y)) -- 检查棋盘坐标 x,y 位置, 如果发现有棋子则返回棋子的 ID, 否则默认返回 0(或 None 表示 false)"""
         x, y = coordinate  # coordinate 必须是 x,y 坐标形式 ----FIXME: 检查参数
