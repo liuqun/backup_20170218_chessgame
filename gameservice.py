@@ -55,8 +55,8 @@ def main():
     svc = GameService([RED_PLAYER_ID, BLACK_PLAYER_ID], [red.name(), black.name()])
     print('%(total)d 位棋手已经就位' % {'total': svc.total_players()})
 
-    from gameboard import GameBoard
-    brd = GameBoard(9, 10)
+    from gameboard import ChineseXiangqiBoard
+    brd = ChineseXiangqiBoard()
     black.rooks[0] = brd.make_id_for_new_chess_piece(BLACK_PLAYER_ID, "車", (0, 9))
     black.rooks[1] = brd.make_id_for_new_chess_piece(BLACK_PLAYER_ID, "車", (8, 9))
     black.knights[0] = brd.make_id_for_new_chess_piece(BLACK_PLAYER_ID, "马", (1, 9))

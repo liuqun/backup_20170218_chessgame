@@ -1,8 +1,9 @@
 # -*-coding:utf8;-*-
+import abc
 
 
-class GameBoard:
-    """GameBoard for 围棋、象棋等棋类游戏的棋盘建模"""
+class AbstractGameBoard(metaclass=abc.ABCMeta):
+    """AbstractGameBoard for 围棋、象棋等棋类游戏的棋盘建模"""
 
     def width(self):
         """棋盘宽度"""
@@ -12,6 +13,7 @@ class GameBoard:
         """棋盘高度"""
         return self.__height
 
+    @abc.abstractmethod
     def __init__(self, width, height):
         self.__width = width
         self.__height = height
@@ -21,36 +23,10 @@ class GameBoard:
         self.__battlefield = [[0 for x in range(width)] for y in range(height)]
         self.__survivors = {}  # 字典映射记录棋盘上每个棋子的位置, 以棋子 pieceId 为键, 以绝对坐标为值
 
+    @abc.abstractmethod
     def dump(self, file):
         """dump(sys.stdout) -- 通过终端命令提示符窗口(或指定其他日志文件)查看当前棋盘"""
-        board = [
-            '┌┬┬┲┳┱┬┬┐',
-            '├┼┼╊╳╉┼┼┤',
-            '├╬┼╄╇╃┼╬┤',
-            '╠┼╬┼╬┼╬┼╣',
-            '├┴┴┴┴┴┴┴┤',
-            '├┬┬┬┬┬┬┬┤',
-            '╠┼╬┼╬┼╬┼╣',
-            '├╬┼╆╈╅┼╬┤',
-            '├┼┼╊╳╉┼┼┤',
-            '└┴┴┺┻┹┴┴┘']
-        board.reverse()
-        debug_dump_file = file
-        if not file:
-            import os
-            # 默认将调试日志文件输出到 os.devnull 不输出调试信息
-            debug_dump_file = open(os.devnull, 'wa')  # 调试信息的设置
-        for y in reversed(range(self.__height)):
-            for x in range(self.__width):
-                id_ = self.__battlefield[y][x]
-                if not id_ or id_ <= 0:  # 0 表示当前格子无棋子, id_=None 时也满足该条件, id_<0 为异常状态
-                    name = board[y][x]
-                else:
-                    name = self.__piece_name_list[id_ - 1]  # 备忘: ID 最小值是从 1 开始的, 但数组下标是从 0 开始的
-                print(name, end='', file=debug_dump_file)
-            print(file=debug_dump_file)
-        if not file:
-            debug_dump_file.close()
+        pass
 
     def make_id_for_new_chess_piece(self, owner, name="？", coordinate=None):
         self.__piece_name_list.append(name)
@@ -143,3 +119,168 @@ class GameBoard:
         else:
             result = {k: v for k, v in self.__survivors.items() if (k in pieces)}
         return result
+
+
+class ChineseXiangqiBoard(AbstractGameBoard):
+    """中国象棋棋盘"""
+    def __init__(self):
+        super().__init__(9, 10)
+
+    def dump(self, file):
+        """dump(sys.stdout) -- 通过终端命令提示符窗口(或指定其他日志文件)查看当前棋盘"""
+        board = [
+            '┌┬┬┲┳┱┬┬┐',
+            '├┼┼╊╳╉┼┼┤',
+            '├╬┼╄╇╃┼╬┤',
+            '╠┼╬┼╬┼╬┼╣',
+            '├┴┴┴┴┴┴┴┤',
+            '├┬┬┬┬┬┬┬┤',
+            '╠┼╬┼╬┼╬┼╣',
+            '├╬┼╆╈╅┼╬┤',
+            '├┼┼╊╳╉┼┼┤',
+            '└┴┴┺┻┹┴┴┘']
+        board.reverse()
+        debug_dump_file = file
+        if not file:
+            import os
+            # 默认将调试日志文件输出到 os.devnull 不输出调试信息
+            debug_dump_file = open(os.devnull, 'wa')  # 调试信息的设置
+        print('１２３４５６７８９', file=debug_dump_file)
+        for y in reversed(range(self.height())):
+            for x in range(self.width()):
+                piece_id = self.has_piece_at_coordinate(coordinate=(x, y))
+                if not piece_id or piece_id <= 0:  # 0 表示当前格子无棋子, None 也表示当前格子无棋子, <0 为异常状态
+                    name = board[y][x]
+                else:
+                    name = self.get_piece_name_by_piece_id(piece_id)
+                print(name, end='', file=debug_dump_file)
+            print(file=debug_dump_file)
+        print('九八七六五四三二一', file=debug_dump_file)
+        if not file:
+            debug_dump_file.close()
+
+
+class ChessBoard(AbstractGameBoard):
+    """国际象棋棋盘"""
+    def __init__(self):
+        super().__init__(8, 8)
+
+    def dump(self, file):
+        """dump(sys.stdout) -- 通过终端命令提示符窗口(或指定其他日志文件)查看当前棋盘"""
+        board = [
+            '　█　█　█　█',
+            '█　█　█　█　',
+            '　█　█　█　█',
+            '█　█　█　█　',
+            '　█　█　█　█',
+            '█　█　█　█　',
+            '　█　█　█　█',
+            '█　█　█　█　']
+        board.reverse()
+        debug_dump_file = file
+        if not file:
+            import os
+            # 默认将调试日志文件输出到 os.devnull 不输出调试信息
+            debug_dump_file = open(os.devnull, 'wa')  # 调试信息的设置
+        for y in reversed(range(self.height())):
+            print('%(row_number)d ' % {'row_number': y+1}, end='', file=debug_dump_file)
+            for x in range(self.width()):
+                piece_id = self.has_piece_at_coordinate(coordinate=(x, y))
+                if not piece_id or piece_id <= 0:  # 0 表示当前格子无棋子, None 也表示当前格子无棋子, <0 为异常状态
+                    name = board[y][x]
+                else:
+                    name = self.get_piece_name_by_piece_id(piece_id)
+                print(name, end='', file=debug_dump_file)
+            print(file=debug_dump_file)
+        print('  ＡＢＣＤＥＦＧＨ', file=debug_dump_file)
+        if not file:
+            debug_dump_file.close()
+
+
+def main():
+    brd = ChessBoard()
+    import sys
+    brd.dump(file=sys.stdout)
+    print(file=sys.stdout)
+
+    class Player:
+        def __init__(self, name):
+            self.__name = str(name)
+            self.rooks = [None]*2
+            self.knights = [None]*2
+            self.bishops = [None]*2
+            self.king = None
+            self.queen = None
+            self.pawns = [None]*8
+
+        def name(self):
+            return str(self.__name) # 不允许改名, 如果需要改名只能去创建另一个新的 Player 对象
+
+    players = {
+        0: Player('白棋'),
+        1: Player('黑棋')}
+    for i in players.keys():
+        players[i].king = brd.make_id_for_new_chess_piece(i)
+        players[i].queen = brd.make_id_for_new_chess_piece(i)
+        players[i].rooks[0] = brd.make_id_for_new_chess_piece(i)
+        players[i].rooks[1] = brd.make_id_for_new_chess_piece(i)
+        players[i].knights[0] = brd.make_id_for_new_chess_piece(i)
+        players[i].knights[1] = brd.make_id_for_new_chess_piece(i)
+        players[i].bishops[0] = brd.make_id_for_new_chess_piece(i)
+        players[i].bishops[1] = brd.make_id_for_new_chess_piece(i)
+        for j in range(8):
+            players[i].pawns[j] = brd.make_id_for_new_chess_piece(i)
+    current_battle_field = {
+        players[0].king: {'name': 'Ｋ', 'coordinate':(4, 0)},
+        players[1].king: {'name': 'ｋ', 'coordinate':(4, 7)},
+        players[0].queen: {'name': 'Ｑ', 'coordinate':(3, 0)},
+        players[1].queen: {'name': 'ｑ', 'coordinate':(3, 7)},
+        players[0].rooks[0]: {'name': 'Ｒ', 'coordinate':(0, 0)},
+        players[0].rooks[1]: {'name': 'Ｒ', 'coordinate':(7, 0)},
+        players[1].rooks[0]: {'name': 'ｒ', 'coordinate':(0, 7)},
+        players[1].rooks[1]: {'name': 'ｒ', 'coordinate':(7, 7)},
+        players[0].knights[0]: {'name': 'Ｎ', 'coordinate':(1, 0)},
+        players[0].knights[1]: {'name': 'Ｎ', 'coordinate':(6, 0)},
+        players[1].knights[0]: {'name': 'ｎ', 'coordinate':(1, 7)},
+        players[1].knights[1]: {'name': 'ｎ', 'coordinate':(6, 7)},
+        players[0].bishops[0]: {'name': 'Ｂ', 'coordinate':(2, 0)},
+        players[0].bishops[1]: {'name': 'Ｂ', 'coordinate':(5, 0)},
+        players[1].bishops[0]: {'name': 'ｂ', 'coordinate':(2, 7)},
+        players[1].bishops[1]: {'name': 'ｂ', 'coordinate':(5, 7)},
+    }
+    for i in range(8):
+        k = players[0].pawns[i]
+        v = {'name': 'Ｐ', 'coordinate':(i, 1)}
+        current_battle_field[k] = v
+        k = players[1].pawns[i]
+        v = {'name': 'ｐ', 'coordinate':(i, 6)}
+        current_battle_field[k] = v
+
+    for k, v in current_battle_field.items():
+        name = v['name']
+        coordinate = v['coordinate']
+        brd.change_piece_name(k, name)
+        brd.move_piece_to_coordinate(k, coordinate)
+    brd.dump(file=sys.stdout)
+    print(file=sys.stdout)
+
+    # 国际象棋最短的棋局：
+    brd.move_piece_to_coordinate(players[0].pawns[6], (6, 3))
+    brd.dump(file=sys.stdout)
+    print('[白棋]兵G4', file=sys.stdout)
+    print(file=sys.stdout)
+    brd.move_piece_to_coordinate(players[1].pawns[4], (4, 4))
+    brd.dump(file=sys.stdout)
+    print('[黑棋]兵E5', file=sys.stdout)
+    print(file=sys.stdout)
+    brd.move_piece_to_coordinate(players[0].pawns[5], (5, 2))
+    brd.dump(file=sys.stdout)
+    print('[白棋]兵F3', file=sys.stdout)
+    print(file=sys.stdout)
+    brd.move_piece_to_coordinate(players[1].queen, (7, 3))
+    brd.dump(file=sys.stdout)
+    print('[黑棋]后H4 ++', file=sys.stdout)
+
+
+if '__main__' == __name__ :
+    main()
