@@ -1,5 +1,22 @@
 # -*-coding:utf8;-*-
 import abc
+import collections
+
+Point = collections.namedtuple('Point', ['x', 'y'])
+
+
+class Vector(object):
+    """描述棋子移动方向的辅助对象"""
+    def __init__(self, dx, dy):
+        self.dx, self.dy = dx, dy
+
+    def locate_from(self, start):
+        """返回新生成的 Point 对象，对应矢量指向的方格
+
+        :param start 起始坐标
+        :return 目的地坐标点 Point(x, y)
+        """
+        return Point(start.x + self.dx, start.y + self.dy)
 
 
 class AbstractGameBoard(metaclass=abc.ABCMeta):
@@ -72,6 +89,21 @@ class AbstractGameBoard(metaclass=abc.ABCMeta):
         piece_id = self.__battlefield[y][x]
         return piece_id  # 注: piece_id 等于 0 时表示当前格子无棋子
 
+    class OutOfBoardException(Exception):
+        pass
+
+    def get_piece_id_at_coordinate(self, coordinate):
+        try:
+            x, y = coordinate
+        except ValueError as e:
+            raise ValueError('Error: 棋盘位置参数无效'
+                             'coordinate={}: {}'.format(str(coordinate), e))
+        else:
+            if (x < 0 or x >= self.__width) or (y < 0 or y >= self.__height):
+                raise self.OutOfBoardException
+            piece_id = self.__battlefield[y][x]
+        return piece_id
+
     def find_piece(self, piece_id):
         # 备注: 棋盘上找不到棋子时直接抛出 ValueError 异常, 如果找到则返回坐标
         if not piece_id or piece_id <= 0 or piece_id > len(self.__piece_name_list):  # None 、负数或 0 均为无效棋子 ID
@@ -120,6 +152,7 @@ class AbstractGameBoard(metaclass=abc.ABCMeta):
 
 class ChineseXiangqiBoard(AbstractGameBoard):
     """中国象棋棋盘"""
+
     def __init__(self):
         super().__init__(9, 10)
 
@@ -192,6 +225,82 @@ class ChessBoard(AbstractGameBoard):
         print('  ＡＢＣＤＥＦＧＨ', file=debug_dump_file)
         if not file:
             debug_dump_file.close()
+
+    class ChessRule(object):
+        directions = []  # 移动方向矢量
+        range_limit = 0  # 取值 0 可以表示棋子不能移动
+
+    class KingChessRule(ChessRule):
+        """王可以直走斜走但只能走一格。
+           其他特殊要求: 不允许王走到敌方攻击范围之内，王車易位过程中王经过的格子也不允许被将军等
+        """
+        # FIXME: 暂时没有检查王走到的位置是处于敌方攻击范围之内
+        # FIXME: 暂时没有实现王車易位的特殊走法
+        directions = [
+            Vector(1, 0), Vector(1, 1), Vector(0, 1), Vector(-1, 1),
+            Vector(-1, 0), Vector(-1, -1), Vector(0, -1), Vector(1, -1)
+        ]
+        range_limit = 1  # 棋子火力射程距离格数
+
+    class QueenChessRule(ChessRule):
+        """后可以直走斜走，不限格数"""
+        directions = [
+            Vector(1, 0), Vector(1, 1), Vector(0, 1), Vector(-1, 1),
+            Vector(-1, 0), Vector(-1, -1), Vector(0, -1), Vector(1, -1)
+        ]
+        range_limit = None  # 棋子火力射程距离格数, =None 表示不限格数
+
+    class RookChessRule(ChessRule):
+        """車斜走，不限格数"""
+        directions = [Vector(1, 0), Vector(0, 1), Vector(-1, 0), Vector(0, -1)]  # 纵横方向
+        range_limit = None  # 棋子火力射程距离格数, =None 表示不限格数
+
+    class BishopChessRule(ChessRule):
+        """象斜走，不限格数"""
+        directions = [Vector(1, 1), Vector(-1, 1), Vector(-1, -1), Vector(1, -1)]  # 斜方向
+        range_limit = None  # 棋子火力射程距离格数, =None 表示不限格数
+
+    class KnightChessRule(ChessRule):
+        """马走日，格数有限制，国际象棋不考虑蹩马腿，中国象棋需要特殊处理"""
+        directions = [
+            Vector(2, 1), Vector(1, 2), Vector(-1, 2), Vector(-2, 1),
+            Vector(-2, -1), Vector(-1, -2), Vector(1, -2), Vector(2, -1),
+        ]
+        range_limit = 1
+
+    class PawnChessRule(ChessRule):
+        """兵能垂直前进，斜吃。另外有吃过路兵和升变特殊规则，代码暂时没有实现"""
+        pass
+
+    def find_available_move(self, piece_id, rule):
+        try:
+            x, y = self.find_piece(piece_id)
+        except KeyError:
+            return ()
+        else:
+            start_point = Point(x, y)
+            result = []
+            for d in rule.directions:
+                squares = []
+                terminal = d.locate_from(start_point)
+                j = 0
+                while True:
+                    if rule.range_limit and j >= rule.range_limit:
+                        break
+                    j += 1
+                    try:
+                        piece2_id = self.get_piece_id_at_coordinate(terminal)
+                    except self.OutOfBoardException:
+                        break  # 至此已经越过棋盘外边框
+                    else:
+                        if self.owner_of_piece(piece2_id) == self.owner_of_piece(piece_id):
+                            break  # 至此处被己方棋子阻挡行进路线
+                        squares.append(terminal)
+                        terminal = d.locate_from(squares[-1])
+                        if piece2_id:
+                            break  # 至此处被敌方棋子阻挡行进路线
+                result += squares
+            return tuple(result)
 
 
 def main():
