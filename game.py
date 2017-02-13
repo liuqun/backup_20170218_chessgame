@@ -125,7 +125,8 @@ class ChessWithAnalyticGeometry:
         """
         assert (0 <= x < self.__width)
         assert (0 <= y < self.__height)
-        return {(i, j) for i in range(self.__width) for j in range(self.__height) if abs(y - j) == abs(x - i)}
+        return {Point(i, j) for i in range(self.__width) for j in range(self.__height) if abs(y - j) == abs(x - i)} \
+               - {Point(x, y)}  # 还要去掉象当前所在的格子
 
 
 # 以下为模块自测试代码
