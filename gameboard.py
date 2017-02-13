@@ -109,16 +109,6 @@ class AbstractGameBoard(metaclass=abc.ABCMeta):
         self.__battlefield[y][x] = piece_id
         self.__survivors[piece_id] = [x, y]
 
-    def position(self, owner=None):  # 棋盘上双方或某一方玩家剩余的棋子
-        if owner is None:  # 若未指定查询对象，则默认返回双方所有棋子
-            return self.__survivors.copy()
-        try:
-            pieces = self.__players[owner]
-        except KeyError:
-            result = {}
-        else:
-            result = {k: v for k, v in self.__survivors.items() if (k in pieces)}
-        return result
 
 
 class ChineseXiangqiBoard(AbstractGameBoard):
