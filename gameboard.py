@@ -337,29 +337,29 @@ def main():
         for j in range(8):
             players[i].pawns[j] = brd.make_id_for_new_chess_piece(i)
     current_battle_field = {
-        players[0].king: {'name': 'Ｋ', 'coordinate':(4, 0)},
-        players[1].king: {'name': 'ｋ', 'coordinate':(4, 7)},
-        players[0].queen: {'name': 'Ｑ', 'coordinate':(3, 0)},
-        players[1].queen: {'name': 'ｑ', 'coordinate':(3, 7)},
-        players[0].rooks[0]: {'name': 'Ｒ', 'coordinate':(0, 0)},
-        players[0].rooks[1]: {'name': 'Ｒ', 'coordinate':(7, 0)},
-        players[1].rooks[0]: {'name': 'ｒ', 'coordinate':(0, 7)},
-        players[1].rooks[1]: {'name': 'ｒ', 'coordinate':(7, 7)},
-        players[0].knights[0]: {'name': 'Ｎ', 'coordinate':(1, 0)},
-        players[0].knights[1]: {'name': 'Ｎ', 'coordinate':(6, 0)},
-        players[1].knights[0]: {'name': 'ｎ', 'coordinate':(1, 7)},
-        players[1].knights[1]: {'name': 'ｎ', 'coordinate':(6, 7)},
-        players[0].bishops[0]: {'name': 'Ｂ', 'coordinate':(2, 0)},
-        players[0].bishops[1]: {'name': 'Ｂ', 'coordinate':(5, 0)},
-        players[1].bishops[0]: {'name': 'ｂ', 'coordinate':(2, 7)},
-        players[1].bishops[1]: {'name': 'ｂ', 'coordinate':(5, 7)},
+        players[0].king: {'name': 'Ｋ', 'coordinate': Point(4, 0)},
+        players[1].king: {'name': 'ｋ', 'coordinate': Point(4, 7)},
+        players[0].queen: {'name': 'Ｑ', 'coordinate': Point(3, 0)},
+        players[1].queen: {'name': 'ｑ', 'coordinate': Point(3, 7)},
+        players[0].rooks[0]: {'name': 'Ｒ', 'coordinate': Point(0, 0)},
+        players[0].rooks[1]: {'name': 'Ｒ', 'coordinate': Point(7, 0)},
+        players[1].rooks[0]: {'name': 'ｒ', 'coordinate': Point(0, 7)},
+        players[1].rooks[1]: {'name': 'ｒ', 'coordinate': Point(7, 7)},
+        players[0].knights[0]: {'name': 'Ｎ', 'coordinate': Point(1, 0)},
+        players[0].knights[1]: {'name': 'Ｎ', 'coordinate': Point(6, 0)},
+        players[1].knights[0]: {'name': 'ｎ', 'coordinate': Point(1, 7)},
+        players[1].knights[1]: {'name': 'ｎ', 'coordinate': Point(6, 7)},
+        players[0].bishops[0]: {'name': 'Ｂ', 'coordinate': Point(2, 0)},
+        players[0].bishops[1]: {'name': 'Ｂ', 'coordinate': Point(5, 0)},
+        players[1].bishops[0]: {'name': 'ｂ', 'coordinate': Point(2, 7)},
+        players[1].bishops[1]: {'name': 'ｂ', 'coordinate': Point(5, 7)},
     }
     for i in range(8):
         k = players[0].pawns[i]
-        v = {'name': 'Ｐ', 'coordinate':(i, 1)}
+        v = {'name': 'Ｐ', 'coordinate': Point(i, 1)}
         current_battle_field[k] = v
         k = players[1].pawns[i]
-        v = {'name': 'ｐ', 'coordinate':(i, 6)}
+        v = {'name': 'ｐ', 'coordinate': Point(i, 6)}
         current_battle_field[k] = v
 
     for k, v in current_battle_field.items():
@@ -369,6 +369,36 @@ def main():
         brd.move_piece_to_coordinate(k, coordinate)
     brd.dump(file=sys.stdout)
     print(file=sys.stdout)
+
+    import game
+    kr = ChessBoard.KingChessRule()
+    qr = ChessBoard.QueenChessRule()
+    rr = ChessBoard.RookChessRule()
+    nr = ChessBoard.KnightChessRule()
+    br = ChessBoard.BishopChessRule()
+    table = {
+        players[0].king: kr,
+        players[0].queen: qr,
+        players[1].king: kr,
+        players[1].queen: qr,
+        players[0].rooks[0]: rr,
+        players[0].rooks[1]: rr,
+        players[0].knights[0]: nr,
+        players[0].knights[1]: nr,
+        players[0].bishops[0]: br,
+        players[0].bishops[1]: br,
+        players[1].rooks[0]: rr,
+        players[1].rooks[1]: rr,
+        players[1].knights[0]: nr,
+        players[1].knights[1]: nr,
+        players[1].bishops[0]: br,
+        players[1].bishops[1]: br,
+    }
+    for piece, rule in table.items():
+        m = brd.find_available_move(piece, rule)
+        print('{}{}:'.format(current_battle_field[piece]['name'],
+                             game.square_name_from_point(current_battle_field[piece]['coordinate'])))
+        print([game.square_name_from_point(name) for name in m])
 
     # 国际象棋最短的棋局：
     brd.move_piece_to_coordinate(players[0].pawns[6], (6, 3))
