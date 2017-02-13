@@ -99,10 +99,13 @@ class ChessWithAnalyticGeometry:
         # ←♔→
         # ↙↓↘
         """
-        # 以王为中心划出 3*3 的 9 格正方形：
-        box = range_by_distance(1, x, y)
-        # 裁剪掉超出棋盘边界的部分：
-        return {(i, j) for (i, j) in box if ((0 <= i < self.__width) and (0 <= j < self.__height))}
+        # 以王为中心划出 3*3=9 格正方形, 然后裁剪掉超出棋盘边界的部分：
+        box = {
+            Point(i, j) for i in {x - 1, x, x + 1} for j in {y - 1, y, y + 1} if
+            ((0 <= i < self.__width) and (0 <= j < self.__height))
+            }
+        box -= {Point(x, y)}  # 再去掉王本身所在的格子
+        return box
 
     # 国际象棋的“后”的最大活动范围
     def queen_move_range(self, x, y):
@@ -125,18 +128,16 @@ class ChessWithAnalyticGeometry:
         return {(i, j) for i in range(self.__width) for j in range(self.__height) if abs(y - j) == abs(x - i)}
 
 
-# 找出所有到中心坐标点 (x0, y0) 距离为 distance 的点, distance>=1
-def range_by_distance(distance, x0, y0):
-    d = int(distance)
-    assert (d > 0)
-    return {(x0 + x, y0 + y) for x in range(-d, d + 1) for y in range(-d, d + 1) if (abs(x) == d or abs(y) == d)}
-
-
 # 以下为模块自测试代码
 def main():
     global __name__
     print('模块名：', __name__)
     chess = ChessWithAnalyticGeometry()
+    points = chess.king_move_range(0, 0)
+    for point in points:
+        square = square_name_from_point(point)
+        print(square.upper(), end=' ')
+    print()
 
 
 if '__main__' == __name__ :
