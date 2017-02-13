@@ -66,7 +66,7 @@ class ChessWithAnalyticGeometry:
     def rook_move_range(self, x, y):
         assert (0 <= x < self.__width)
         assert (0 <= y < self.__height)
-        return set((i, y) for i in range(self.__width)) ^ set((x, j) for j in range(self.__height))
+        return set(Point(i, y) for i in range(self.__width)) ^ set(Point(x, j) for j in range(self.__height))
 
     # “馬”的最大活动范围：
     def knight_move_range(self, x, y):
@@ -89,7 +89,7 @@ class ChessWithAnalyticGeometry:
             (x - 2, y - 1), (x - 1, y - 2), (x + 1, y - 2), (x + 2, y - 1),
         }
         # 剔除超出棋盘边界的点：
-        return {(i, j) for (i, j) in destinations if (0 <= i < self.__width) and (0 <= j < self.__height)}
+        return {Point(i, j) for (i, j) in destinations if (0 <= i < self.__width) and (0 <= j < self.__height)}
 
     # 国际象棋的“王”的最大活动范围
     def king_move_range(self, x, y):
