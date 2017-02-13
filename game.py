@@ -137,10 +137,6 @@ def main():
     global __name__
     print('模块名：', __name__)
     chess = ChessWithAnalyticGeometry()
-    for x, y in zip(range(8), range(8)):
-        name = square_name_from_point(Point(x, y))
-        print('{}:x={},y={}'.format(name.upper(), x, y))
-        print(point_from_square_name((name)))
 
 
 if '__main__' == __name__ :
