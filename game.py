@@ -19,37 +19,25 @@ class ChessWithAnalyticGeometry:
     # “馬”的最大活动范围：
     def knight_move_range(self, x, y):
         """“馬”的最大活动范围
+        # 从起点坐标 (x,y) 出发, 最多可以到达 8 个位置, 然后排除其中超出棋盘边界的格子即可
         # 示意图：
         #
-        # 　　↖　↗
-        # 　↖　｜　↗
-        # 　　—馬—
-        # 　↙　｜　↘
-        # 　　↙　↘
+        # 　(x-1,y+2)↖　↗(x+1,y+2)
+        # (x-2,y+1)↖　｜　↗(x+2,y+1)
+        #          　—馬—
+        # (x-2,y-1)↙　｜　↘(x+2,y-1)
+        # 　(x-1,y-2)↙　↘(x+1,y-2)
         #
         # 棋子走法：先直走一格再斜走一格，国际象棋不考虑蹩马腿的情况
-        # 坐标值计算判定：
-        # 起点坐标 (x,y)
-        # 终点坐标 (i,j)
-        # 例如从 (0,0) 到 (1,2) 或从 (0,0) 到 (2,1)
-        # 根据直角三角形勾股定理，斜边的平方等于直角边的平方和
-        # c^2 = a^2 + b^2
-        #     = (x-i)^2 + (y-j)^2
-        #     = 1 + 4
-        #     = 5
         """
         assert (0 <= x < self.__width)
         assert (0 <= y < self.__height)
-        # 挑出以马为中心, 距离(或斜线距离)为 2 格的 5*5 正方形区域:
-        # □☒□☒□
-        # ☒　　　☒
-        # □　馬　□
-        # ☒　　　☒
-        # □☒□☒□
-        box = range_by_distance(2, x, y)
-        # 裁剪掉超出棋盘边界的部分, 同时根据勾股定理判断符合条件的终点坐标：
-        return {(i, j) for (i, j) in box if
-                ((0 <= i < self.__width) and (0 <= j < self.__height) and ((x - i) ** 2 + (y - j) ** 2 == 5))}
+        destinations = {
+            (x - 2, y + 1), (x - 1, y + 2), (x + 1, y + 2), (x + 2, y + 1),
+            (x - 2, y - 1), (x - 1, y - 2), (x + 1, y - 2), (x + 2, y - 1),
+        }
+        # 剔除超出棋盘边界的点：
+        return {(i, j) for (i, j) in destinations if (0 <= i < self.__width) and (0 <= j < self.__height)}
 
     # 国际象棋的“王”的最大活动范围
     def king_move_range(self, x, y):
