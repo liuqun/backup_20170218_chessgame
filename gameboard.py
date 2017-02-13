@@ -18,7 +18,7 @@ class AbstractGameBoard(metaclass=abc.ABCMeta):
         self.__width = width
         self.__height = height
         self.__piece_name_list = []  # 存储所有棋子的名字字符串, 初始状态为空列表
-        self.__players = {}  # 存储每个玩家各自拥有的所有棋子的编号, 以玩家编号为键分别存储
+        self.__players = {}  # 存储每个玩家各自拥有的所有棋子的编号, 以棋子编号为键分别存储每个棋子对应哪一位玩家
         # __battlefield[y][x] 对应坐标点 x,y 处的棋子ID, 初始值 0 表示格子上没有棋子
         self.__battlefield = [[0 for x in range(width)] for y in range(height)]
         self.__survivors = {}  # 字典映射记录棋盘上每个棋子的位置, 以棋子 pieceId 为键, 以绝对坐标为值
@@ -43,9 +43,7 @@ class AbstractGameBoard(metaclass=abc.ABCMeta):
             self.__battlefield[y][x] = piece_id
             # 注: 考虑以后需要独立更改 x 和 y 的坐标值, 下面存储坐标用的是 [x,y] 而不是 (x,y)
             self.__survivors[piece_id] = [x, y]  # 词典以 piece_id 为键, 以棋子坐标为值
-        if owner not in self.__players:
-            self.__players[owner] = []
-        self.__players[owner].append(piece_id)
+        self.__players[piece_id] = owner
         return piece_id  # 返回值最小从 1 开始表示有棋子, piece_id==0 的棋盘格子无棋子
 
     def change_piece_name(self, piece_id, new_name):
@@ -109,6 +107,15 @@ class AbstractGameBoard(metaclass=abc.ABCMeta):
         self.__battlefield[y][x] = piece_id
         self.__survivors[piece_id] = [x, y]
 
+    def owner_of_piece(self, piece_id):
+        """查询指定棋子的拥有者"""
+        owner = None
+        if not piece_id:
+            return owner  # 注: 空格 piece_id = 0 对应拥有者 owner = None
+        if piece_id < 0 or piece_id > len(self.__piece_name_list):
+            raise ValueError('Error: invalid piece_id={}'.format(piece_id))
+        owner = self.__players[piece_id]
+        return owner
 
 
 class ChineseXiangqiBoard(AbstractGameBoard):
