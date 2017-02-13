@@ -1,4 +1,56 @@
 #-*-coding:utf8;-*-
+from collections import namedtuple
+
+
+Point = namedtuple(typename='Point', field_names=['x', 'y'])
+
+
+def point_from_square_name(square_name):
+    """将棋盘方格在国际象棋棋谱中的字符串名称 a1-h8 格子名称转换为整数坐标 (0,0) - (7,7)
+
+    >>> [point_from_square_name(s) for s in {'a1','a2','b1','b2','h8'}]
+    [(0, 0), (0, 1), (1, 0), (1, 1), (7, 7)]
+    >>> point_from_square_name('A1')  # 字母 A-H 大小写通用
+    (0, 0)
+    >>> point_from_square_name('A2')
+    (0, 1)
+    >>> point_from_square_name('H8')
+    (7, 7)
+    """
+    s = str.lower(square_name)
+    assert(s[0].isalpha())  # 纵列必须是纯字母
+    assert(s[1].isdigit())  # 行号必须是纯数字
+    y = int(s[1]) - 1
+    x = ord(s[0]) - ord('a')
+    return Point(x, y)
+
+
+def letter_from_x(x):
+    """国际象棋纵列的编号. 数字 0-8 对应到字母代号 a-h. 此函数始终输出小写字母
+
+    >>>[letter_from_x(0) for i in range(8)]
+    ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+    """
+    assert(0 <= x < 8)
+    letter = chr(x + ord('a'))
+    return letter
+
+
+def square_name_from_point(point):
+    """将棋盘方格整数坐标 (0,0) (0,1) ...(x, y)... (7,7)
+       转换为国际象棋棋谱中的字符串名称。默认输出小写字母格式
+
+    >>>square_name_from_point((0, 0))
+    'a1'
+    >>>square_name_from_point((0, 1))
+    'a2'
+    >>>square_name_from_point((7, 7))
+    'h8'
+    """
+    assert(point.x >= 0)
+    chessboard_file = letter_from_x(point.x)
+    chessboard_rank = str(point.y + 1)
+    return ''.join([chessboard_file, chessboard_rank])
 
 
 # TODO: 兵的走法必须结合棋盘实际情况才能给出：只能前进不能后退、直走斜吃、可以吃过路兵、首次可以走两格
@@ -84,6 +136,11 @@ def range_by_distance(distance, x0, y0):
 def main():
     global __name__
     print('模块名：', __name__)
+    chess = ChessWithAnalyticGeometry()
+    for x, y in zip(range(8), range(8)):
+        name = square_name_from_point(Point(x, y))
+        print('{}:x={},y={}'.format(name.upper(), x, y))
+        print(point_from_square_name((name)))
 
 
 if '__main__' == __name__ :
