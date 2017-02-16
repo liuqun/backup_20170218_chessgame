@@ -251,7 +251,7 @@ class ChessBoard(AbstractGameBoard):
         range_limit = None  # 棋子火力射程距离格数, =None 表示不限格数
 
     class RookChessRule(ChessRule):
-        """車斜走，不限格数"""
+        """車直走，不限格数"""
         directions = [Vector(1, 0), Vector(0, 1), Vector(-1, 0), Vector(0, -1)]  # 纵横方向
         range_limit = None  # 棋子火力射程距离格数, =None 表示不限格数
 
