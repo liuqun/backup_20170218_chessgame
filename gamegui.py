@@ -57,7 +57,7 @@ class MyChessboard(direct.showbase.ShowBase.ShowBase):
             # 实例化棋子的 3D 模型(初始定位到棋盘方格模型的上方)
             piece_holder = squares[i].attachNewNode("pieceInstanceHolder")
             piece_holder.setColor(colors['BLACK'])
-            white_piece_model[name].instanceTo(piece_holder)
+            black_piece_model[name].instanceTo(piece_holder)
             pieces_sorted_by_square[i] = piece_holder
 
         # Usage: self.__pieceOnSquare[i], 其中: 0<=i<64. i=0 时代表棋盘 a1 格, i=63 时代表棋盘 h8 格
